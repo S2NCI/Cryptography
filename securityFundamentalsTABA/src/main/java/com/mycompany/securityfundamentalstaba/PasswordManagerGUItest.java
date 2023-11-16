@@ -1,27 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.mycompany.securityfundamentalstaba;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-
-
-/**
- *
- * @author gavin
+/*
+ * @author x22179551 - Adam Cowan 
+ * @author x21229317 - Dillon O’ Connor 
+ * @author x22110275 - Eoin Wyse 
+ * @author x21237336 - Gavin Kelly 
+ * @author x21226695 - Kyle White 
  */
+
 public class PasswordManagerGUItest extends javax.swing.JFrame {
+    // Declare variables
     PasswordManager manager;
     PasswordVerifier verifier;
 
     private Map<String, String> accountDB = new HashMap<>();
     private Map<String, Map<String, String>> userPasswords = new HashMap<>();
     
+    // Initialise supporting classes
     public PasswordManagerGUItest() {
         manager = new PasswordManager(verifier);
         verifier = new PasswordVerifier(manager);
@@ -167,79 +171,140 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void createbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createbtnActionPerformed
-     String username = JOptionPane.showInputDialog(this, "Enter your username:");
-    String password = JOptionPane.showInputDialog(this, "Enter your password:");
+        // Declare the user input fields
+        JTextField usernameField = new JTextField(15);
+        JTextField passwordField = new JTextField(15);
 
-    if (username != null && password != null) {
-        if (!username.isEmpty() && !password.isEmpty()) {
-            String hashedPassword = verifier.hashPassword(password);
-            manager.accountDB.put(username, hashedPassword);
-            manager.userPasswords.put(username, new HashMap<>());
+        // Build the user input box
+        JPanel myPanel = new JPanel();
+        myPanel.add(new JLabel("Username:"));
+        myPanel.add(usernameField);
+        myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+        myPanel.add(new JLabel("Password:"));
+        myPanel.add(passwordField);
+
+        // Instantiate the input box
+        int result = JOptionPane.showConfirmDialog(null, myPanel, "Please Enter Account Details", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
             
-            JOptionPane.showMessageDialog(this, "Account created successfully");
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
-        }
-    }
-    }//GEN-LAST:event_createbtnActionPerformed
+            // Make sure that the user inputs aren't forms of empty
+            if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
+                // Hash the user password
+                String hashedPassword = verifier.hashPassword(password);
+                // Insert hashed(encrypted) password into the account and password databases
+                manager.accountDB.put(username, hashedPassword);
+                manager.userPasswords.put(username, new HashMap<>());
 
-    private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
-        // TODO add your handling code here:
-        System.exit(0);
-    }//GEN-LAST:event_logoutBtnActionPerformed
-
-    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        // TODO add your handling code here:
-    if (manager != null && manager.getLoggedInUser() != null) {
-        String username = JOptionPane.showInputDialog(this, "Enter the username to be saved:");
-        String password = JOptionPane.showInputDialog(this, "Enter the password to be saved");
-
-        if (username != null && password != null) {
-            if (!username.isEmpty() && !password.isEmpty()) {
-                manager.addSavedUsernameAndPassword(manager.getLoggedInUser(), username, password);
-                JOptionPane.showMessageDialog(this, "Username and password saved successfully.");
+                JOptionPane.showMessageDialog(this, "Account created successfully.");
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
             }
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "You are not logged in.");
-    }
+    }//GEN-LAST:event_createbtnActionPerformed
+
+    private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        // End the program, simplest solution 
+        // GUI is not a focus of the project
+        System.exit(0);
+    }//GEN-LAST:event_logoutBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        // Check that user is logged in to draw from
+        if (manager != null && manager.getLoggedInUser() != null) {
+            // Declare the user input fields
+            JTextField locationField = new JTextField(15);
+            JTextField usernameField = new JTextField(15);
+            JTextField passwordField = new JTextField(15);
+
+            // Build the user input box
+            JPanel myPanel = new JPanel();
+            myPanel.add(new JLabel("Application:"));
+            myPanel.add(locationField);
+            myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+            myPanel.add(new JLabel("Username:"));
+            myPanel.add(usernameField);
+            myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+            myPanel.add(new JLabel("Password:"));
+            myPanel.add(passwordField);
+
+            // Instantiate the input box
+            int result = JOptionPane.showConfirmDialog(null, myPanel, "Please Enter Details to be Saved", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                String location = locationField.getText();
+
+                // Make sure that the user inputs aren't forms of empty
+                if (username != null && password != null  && location != null && !username.trim().isEmpty() && !password.trim().isEmpty() && !location.trim().isEmpty()) {
+                    
+                    manager.addSavedUsernameAndPassword(manager.getLoggedInUser(), username, password, location);
+
+                    JOptionPane.showMessageDialog(this, "Details saved successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "You are not logged in.");
+        }
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void savedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savedBtnActionPerformed
-        // TODO add your handling code here:
-          List<String> savedPasswords = manager.viewSavedPasswords(manager.getLoggedInUser());
+        // Print list of saved passwords for the given user
+        List<String> savedData = manager.viewSavedPasswords(manager.getLoggedInUser());
 
-    if (!savedPasswords.isEmpty()) {
-        StringBuilder passwordList = new StringBuilder();
-        for (String password : savedPasswords) {
-            passwordList.append(password).append("\n");
+        if (!savedData.isEmpty()) {
+            // Combine formatted details into a printable string
+            StringBuilder passwordList = new StringBuilder();
+            for (String data : savedData) {
+                passwordList.append(data).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, "Saved passwords:\n" + passwordList.toString());
+        } else {
+            JOptionPane.showMessageDialog(this, "No saved passwords for this user.");
         }
-        JOptionPane.showMessageDialog(this, "Saved passwords:\n" + passwordList.toString());
-    } else {
-        JOptionPane.showMessageDialog(this, "No saved passwords for this user.");
-    }
     }//GEN-LAST:event_savedBtnActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        // TODO add your handling code here:
-    if (manager.loggedInUser == null) {
-        String username = JOptionPane.showInputDialog(this, "Enter your username:");
-        String password = JOptionPane.showInputDialog(this, "Enter your password:");
+        // Ensure the user is not already logged in
+        if (manager.loggedInUser == null) {
+            // Declare the user input fields
+            JTextField usernameField = new JTextField(15);
+            JTextField passwordField = new JTextField(15);
 
-        if (username != null && password != null) {
-            String loggedInUser = verifier.login(username, password);
-            if (loggedInUser != null) {
-                manager.loggedInUser = loggedInUser;
-                JOptionPane.showMessageDialog(this, "Login successful!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Login failed.");
+            // Build the user input box
+            JPanel myPanel = new JPanel();
+            myPanel.add(new JLabel("Username:"));
+            myPanel.add(usernameField);
+            myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+            myPanel.add(new JLabel("Password:"));
+            myPanel.add(passwordField);
+
+            // Instantiate the input box
+            int result = JOptionPane.showConfirmDialog(null, myPanel, "Please Enter your Login Details", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+
+                // Make sure that the user inputs aren't forms of empty
+                if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
+                    // Verify user details from input
+                    String loggedInUser = verifier.login(username, password);
+                    if (loggedInUser != null) {
+                        manager.loggedInUser = loggedInUser;
+                        JOptionPane.showMessageDialog(this, "Login successful!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Login failed.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
+                }
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "You are already logged in.");
         }
-    } else {
-        JOptionPane.showMessageDialog(this, "You are already logged in.");
-    }
     }//GEN-LAST:event_loginBtnActionPerformed
 
     /**

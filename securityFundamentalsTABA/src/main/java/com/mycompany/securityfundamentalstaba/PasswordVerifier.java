@@ -1,41 +1,47 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.securityfundamentalstaba;
 
-import java.util.Scanner;
 import org.mindrot.jbcrypt.BCrypt;
 
-/**
- *
- * @author gavin
+/*
+ * @author x22179551 - Adam Cowan 
+ * @author x21229317 - Dillon O’ Connor 
+ * @author x22110275 - Eoin Wyse 
+ * @author x21237336 - Gavin Kelly 
+ * @author x21226695 - Kyle White 
  */
-    public class PasswordVerifier {
 
-        private PasswordManager pManager;
+public class PasswordVerifier {
+    // Declare variables
+    private PasswordManager pManager;
 
-        public PasswordVerifier(PasswordManager pManager) {
-            this.pManager = pManager;
+    // Constructor
+    public PasswordVerifier(PasswordManager pManager) {
+        this.pManager = pManager;
+    } // End PasswordVerifier
+
+    // Hash a given password using BCrypt
+    public String hashPassword(String password) {
+        String salt = BCrypt.gensalt();
+        return BCrypt.hashpw(password, salt);
+    } // End Hash Password
+
+    // Verify a given input password against a hashed password using BCrypt
+    public boolean verifyPassword(String inputPassword, String hashedPassword) {
+        return BCrypt.checkpw(inputPassword, hashedPassword);
+    } // End Verify Password
+
+    // Perform login by checking the provided username and password
+    public String login(String username, String password) {
+        // Retrieve the stored hashed password from the account database
+        String storedPassword = pManager.accountDB.get(username);
+        
+        // Check if the stored password is not null and matches the provided password
+        if (storedPassword != null && verifyPassword(password, storedPassword)) {
+            // Set the logged in user in the PasswordManager class and return if successful
+            pManager.setLoggedInUser(username);
+            return username;
+        } else {
+            return null;
         }
-
-        public String hashPassword(String password) {
-            String salt = BCrypt.gensalt();
-            return BCrypt.hashpw(password, salt);
-        }
-
-        public boolean verifyPassword(String inputPassword, String hashedPassword) {
-            return BCrypt.checkpw(inputPassword, hashedPassword);
-        }
-
-        public String login(String username, String password) {
-            String storedPassword = pManager.accountDB.get(username);
-
-            if (storedPassword != null && verifyPassword(password, storedPassword)) {
-                pManager.setLoggedInUser(username);
-                return username;
-            } else {
-                return null;
-            }
-        }
-    }
+    } // End Login
+} // End Class
