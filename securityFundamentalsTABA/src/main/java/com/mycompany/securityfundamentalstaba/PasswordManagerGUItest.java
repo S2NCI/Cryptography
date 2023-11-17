@@ -19,16 +19,17 @@ import javax.swing.JTextField;
 
 public class PasswordManagerGUItest extends javax.swing.JFrame {
     // Declare variables
-    PasswordManager manager;
-    PasswordVerifier verifier;
+    public PasswordManager manager;
+    public PasswordVerifier verifier;
 
     private Map<String, String> accountDB = new HashMap<>();
     private Map<String, Map<String, String>> userPasswords = new HashMap<>();
     
     // Initialise supporting classes
     public PasswordManagerGUItest() {
+        verifier = new PasswordVerifier();
         manager = new PasswordManager(verifier);
-        verifier = new PasswordVerifier(manager);
+        verifier.setManager(manager);
         initComponents();
     }
 
@@ -191,12 +192,8 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
             
             // Make sure that the user inputs aren't forms of empty
             if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
-                // Hash the user password
-                String hashedPassword = verifier.hashPassword(password);
                 // Insert hashed(encrypted) password into the account and password databases
-                manager.accountDB.put(username, hashedPassword);
-                manager.userPasswords.put(username, new HashMap<>());
-
+                manager.createAccount(username, password);
                 JOptionPane.showMessageDialog(this, "Account created successfully.");
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
@@ -205,6 +202,7 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
     }//GEN-LAST:event_createbtnActionPerformed
 
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        manager.saveDatabase();
         // End the program, simplest solution 
         // GUI is not a focus of the project
         System.exit(0);

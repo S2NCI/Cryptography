@@ -15,10 +15,15 @@ public class PasswordVerifier {
     private PasswordManager pManager;
 
     // Constructor
-    public PasswordVerifier(PasswordManager pManager) {
-        this.pManager = pManager;
+    public PasswordVerifier() {
+        
     } // End PasswordVerifier
-
+    
+    // Post-initialisation setter
+    public void setManager(PasswordManager pManager) {
+        this.pManager = pManager;
+    } // end set manager
+    
     // Hash a given password using BCrypt
     public String hashPassword(String password) {
         String salt = BCrypt.gensalt();
@@ -33,7 +38,7 @@ public class PasswordVerifier {
     // Perform login by checking the provided username and password
     public String login(String username, String password) {
         // Retrieve the stored hashed password from the account database
-        String storedPassword = pManager.accountDB.get(username);
+        String storedPassword = pManager.getUser(username);
         
         // Check if the stored password is not null and matches the provided password
         if (storedPassword != null && verifyPassword(password, storedPassword)) {

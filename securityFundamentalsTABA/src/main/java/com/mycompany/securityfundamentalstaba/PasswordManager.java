@@ -1,5 +1,11 @@
 package com.mycompany.securityfundamentalstaba;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +22,10 @@ import java.util.Scanner;
 
 public class PasswordManager {
     // Declare variables
-    final Map<String, String> accountDB = new HashMap<>();
-    final Map<String, Map<String, PasswordHolder>> userPasswords = new HashMap<>();
+    private Map<String, String> accountDB = new HashMap<>();
+    private Map<String, Map<String, PasswordHolder>> userPasswords= new HashMap<>();
     // Currently logged-in user
-    String loggedInUser = null; 
+    public String loggedInUser = null; 
     private PasswordVerifier verifier;
 
     // Constructor
@@ -32,11 +38,56 @@ public class PasswordManager {
         // Create scanner for user input
         Scanner scanner = new Scanner(System.in);
         scanner.close(); 
+        
+        loadDatabase();
     } // End Run
 
+    // Post-initialisation setter
+    public void setManager(PasswordVerifier pVerifier) {
+        this.verifier = pVerifier;
+    } // end set manager
+    
+    // Load accountDB from file
+    private void loadDatabase() {
+        // Define file to check
+        File file = new File("data.dat");
+        // Check for extant data file and create a blank instance if not found
+        if (file.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream("data.dat");
+                ObjectInputStream ois = new ObjectInputStream(fis); 
+                // Extract the maps for user data and saved passwords from
+                Pair loadData = (Pair) ois.readObject();
+                userPasswords = loadData.getUserPasswords();
+                accountDB = loadData.getAccountDB();
+                System.out.println("ACCOUNTS LOADED");
+                ois.close(); 
+            } catch(Exception e) {
+                System.out.println(e);
+            }
+        } else {
+            userPasswords = new HashMap<>();
+            System.out.println("FILE NOT FOUND. NEW FILE CREATED");
+        }
+    } // end Load Tasks
+    
+    // Serialise and export the database to a file to keep between runtimes
+    public void saveDatabase() {
+        try {
+            FileOutputStream fos = new FileOutputStream("data.dat");
+            ObjectOutputStream oos = new ObjectOutputStream(fos); 
+            Pair saveData = new Pair(accountDB, userPasswords); 
+            oos.writeObject(saveData);
+            System.out.println("ACCOUNTS SAVED");
+            oos.close(); 
+        } catch (IOException e) {
+            System.out.println(e);
+        } 
+    } // end Save Tasks
+    
     // Create new account with provided details
     public void createAccount(String username, String password) {
-        // Pass password to verifier object
+        // Pass password to verifier object to hash
         String hashedPassword = verifier.hashPassword(password);
         // Store returned value in the account database
         accountDB.put(username, hashedPassword);
@@ -80,4 +131,8 @@ public class PasswordManager {
     public void setLoggedInUser(String username) {
         loggedInUser = username;
     } // End Set Logged in User
+    
+    public String getUser(String username) {
+        return accountDB.get(username);
+    }
 }
