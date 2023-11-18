@@ -30,6 +30,7 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
         verifier = new PasswordVerifier();
         manager = new PasswordManager(verifier);
         verifier.setManager(manager);
+        manager.run();
         initComponents();
     }
 
@@ -250,19 +251,7 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void savedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savedBtnActionPerformed
-        // Print list of saved passwords for the given user
-        List<String> savedData = manager.viewSavedPasswords(manager.getLoggedInUser());
-
-        if (!savedData.isEmpty()) {
-            // Combine formatted details into a printable string
-            StringBuilder passwordList = new StringBuilder();
-            for (String data : savedData) {
-                passwordList.append(data).append("\n");
-            }
-            JOptionPane.showMessageDialog(this, "Saved passwords:\n" + passwordList.toString());
-        } else {
-            JOptionPane.showMessageDialog(this, "No saved passwords for this user.");
-        }
+        JOptionPane.showMessageDialog(this, manager.viewSavedPasswords());
     }//GEN-LAST:event_savedBtnActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
@@ -289,13 +278,9 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
                 // Make sure that the user inputs aren't forms of empty
                 if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
                     // Verify user details from input
-                    String loggedInUser = verifier.login(username, password);
-                    if (loggedInUser != null) {
-                        manager.loggedInUser = loggedInUser;
-                        JOptionPane.showMessageDialog(this, "Login successful!");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Login failed.");
-                    }
+                    String response = verifier.login(username, password);
+                    // For security reasons any failure should not be explained in detail
+                    JOptionPane.showMessageDialog(this, response);
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
                 }

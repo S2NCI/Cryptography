@@ -37,16 +37,22 @@ public class PasswordVerifier {
 
     // Perform login by checking the provided username and password
     public String login(String username, String password) {
-        // Retrieve the stored hashed password from the account database
-        String storedPassword = pManager.getUser(username);
-        
-        // Check if the stored password is not null and matches the provided password
-        if (storedPassword != null && verifyPassword(password, storedPassword)) {
-            // Set the logged in user in the PasswordManager class and return if successful
-            pManager.setLoggedInUser(username);
-            return username;
-        } else {
-            return null;
+        try {
+            // Retrieve the stored hashed password from the account database
+            String storedPassword = pManager.getUserPassword(username);
+
+            // Check if the stored password is not null and matches the provided password
+            if (storedPassword != null && verifyPassword(password, storedPassword)) {
+                // Set the logged in user in the PasswordManager class and return if successful
+                pManager.setLoggedInUser(username);
+                pManager.setLoggedInPassword(password);
+                return "Login successful!";
+            } else {
+                return "Login failed :(";
+            }
+        } catch (Exception ex) {
+            // No need to log, it's because the user doesn't exist
+            return "Login failed :(";
         }
     } // End Login
 } // End Class

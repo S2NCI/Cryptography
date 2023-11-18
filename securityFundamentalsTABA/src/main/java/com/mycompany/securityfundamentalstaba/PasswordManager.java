@@ -22,10 +22,10 @@ import java.util.Scanner;
 
 public class PasswordManager {
     // Declare variables
-    private Map<String, String> accountDB = new HashMap<>();
-    private Map<String, Map<String, PasswordHolder>> userPasswords= new HashMap<>();
+    private Map<String, UserHolder> accountDB = new HashMap<>();
     // Currently logged-in user
     public String loggedInUser = null; 
+    public String loggedInPassword = null;
     private PasswordVerifier verifier;
 
     // Constructor
@@ -40,12 +40,16 @@ public class PasswordManager {
         scanner.close(); 
         
         loadDatabase();
+        
+        // Debug loaded accounts
+        for (Map.Entry<String, UserHolder> account : accountDB.entrySet()) 
+            System.out.println("Username: " + account.getKey() + ", Password: " + account.getValue().getUserPassword());
     } // End Run
 
     // Post-initialisation setter
     public void setManager(PasswordVerifier pVerifier) {
         this.verifier = pVerifier;
-    } // end set manager
+    } // End set manager
     
     // Load accountDB from file
     private void loadDatabase() {
@@ -57,71 +61,72 @@ public class PasswordManager {
                 FileInputStream fis = new FileInputStream("data.dat");
                 ObjectInputStream ois = new ObjectInputStream(fis); 
                 // Extract the maps for user data and saved passwords from
-                Pair loadData = (Pair) ois.readObject();
-                userPasswords = loadData.getUserPasswords();
-                accountDB = loadData.getAccountDB();
+                accountDB = (Map<String, UserHolder>) ois.readObject();
                 System.out.println("ACCOUNTS LOADED");
                 ois.close(); 
             } catch(Exception e) {
                 System.out.println(e);
             }
         } else {
-            userPasswords = new HashMap<>();
+            saveDatabase();
             System.out.println("FILE NOT FOUND. NEW FILE CREATED");
         }
-    } // end Load Tasks
+    } // End Load Tasks
     
     // Serialise and export the database to a file to keep between runtimes
     public void saveDatabase() {
         try {
             FileOutputStream fos = new FileOutputStream("data.dat");
             ObjectOutputStream oos = new ObjectOutputStream(fos); 
-            Pair saveData = new Pair(accountDB, userPasswords); 
-            oos.writeObject(saveData);
+            oos.writeObject(accountDB);
             System.out.println("ACCOUNTS SAVED");
             oos.close(); 
         } catch (IOException e) {
             System.out.println(e);
         } 
-    } // end Save Tasks
+    } // End Save Tasks
     
     // Create new account with provided details
     public void createAccount(String username, String password) {
         // Pass password to verifier object to hash
         String hashedPassword = verifier.hashPassword(password);
+        UserHolder newUser = new UserHolder(hashedPassword);
         // Store returned value in the account database
-        accountDB.put(username, hashedPassword);
-        // Initialise a map to store saved passwords for this user
-        userPasswords.put(username, new HashMap<>());
+        accountDB.put(username, newUser);
     } // End Create Account
 
     // View saved passwords for a given user
-    public List<String> viewSavedPasswords(String username) {
+    public String viewSavedPasswords() {
+        // Combine formatted details into a printable string
         List<String> savedPasswordsList = new ArrayList<>();
+        
         // Retrieve saved passwords for the specified username
-        Map<String, PasswordHolder> savedPasswords = userPasswords.get(username);
+        UserHolder savedUser = accountDB.get(loggedInUser);
 
-        // Iterate through extant passwords
-        if (savedPasswords != null && !savedPasswords.isEmpty()) {
-            for (Map.Entry<String, PasswordHolder> entry : savedPasswords.entrySet()) {
-                PasswordHolder data = entry.getValue();
-                // Format data as a readable string
-                savedPasswordsList.add("Username: " + data.getSavedUsername() + ", Password: " + data.getSavedPassword() + ", Location: " + data.getSavedLocation());
-            }
+        if (savedUser != null) {
+            savedPasswordsList.add("Saved passwords:");
+            // Add every login for the user to the savedPasswords list
+            savedPasswordsList.addAll(savedUser.getUserPasswords(loggedInPassword));
         } else {
-            savedPasswordsList.add("No saved passwords for this user.");
+            savedPasswordsList.add("Not Currently Logged In");
         }
-
-        return savedPasswordsList;
+        // Turn into one large string and return
+        return String.join("\n", savedPasswordsList);
     } // End View Saved Passwords
 
     // Add a saved username and password for a given user
     public void addSavedUsernameAndPassword(String username, String savedUsername, String savedPassword, String savedLocation) {
         // Retrieve saved passwords map for the specified username
-        PasswordHolder userPasswordsInstance = new PasswordHolder(savedUsername, savedPassword, savedLocation);
-        Map<String, PasswordHolder> savedPasswords = userPasswords.get(username);
-        // Add the provided username and password to the retrieved map
-        savedPasswords.put(savedUsername, userPasswordsInstance);
+        UserHolder savedUser = accountDB.get(username);
+
+        if (savedUser != null) {
+            // Create a new password storage instance
+            PasswordHolder userPasswordsInstance = new PasswordHolder(savedUsername, savedPassword, savedLocation);
+            // Encrypt the data for storage using the key(user password)
+            savedUser.addSavedPassword(loggedInPassword, userPasswordsInstance);
+        } else {
+            System.out.println("FAILED TO FIND USER");
+        }
     } // End Add Saved Username and Password
 
     public String getLoggedInUser() {
@@ -131,8 +136,17 @@ public class PasswordManager {
     public void setLoggedInUser(String username) {
         loggedInUser = username;
     } // End Set Logged in User
-    
-    public String getUser(String username) {
-        return accountDB.get(username);
-    }
+
+    public String getLoggedInPassword() {
+        return loggedInPassword;
+    } // End Get Logged in Password
+
+    public void setLoggedInPassword(String loggedInPassword) {
+        this.loggedInPassword = loggedInPassword;
+    } // End Set Logged in Password
+
+    // Retrieve the userholder stored password for a given account database hashset user
+    public String getUserPassword(String username) {
+        return accountDB.get(username).getUserPassword();
+    } // End get User Password
 }
