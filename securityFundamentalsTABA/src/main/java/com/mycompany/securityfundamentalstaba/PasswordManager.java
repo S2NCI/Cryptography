@@ -149,4 +149,9 @@ public class PasswordManager {
     public String getUserPassword(String username) {
         return accountDB.get(username).getUserPassword();
     } // End get User Password
+    
+    // Check that a given username doesn't already exist
+    public boolean checkUserExists(String username) {
+        return accountDB.containsKey(username);
+    } // End check user exists
 }

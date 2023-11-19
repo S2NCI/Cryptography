@@ -193,11 +193,16 @@ public class PasswordManagerGUI extends javax.swing.JFrame {
             
             // Make sure that the user inputs aren't forms of empty
             if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
-                // Insert hashed(encrypted) password into the account and password databases
-                manager.createAccount(username, password);
-                // Confirm and ask if the user wants to autologin
-                int dialogResult = JOptionPane.showConfirmDialog(this, "Account created successfully. Do you want to log in?", "Login Confirmation", JOptionPane.YES_NO_OPTION);
-                if (dialogResult == JOptionPane.YES_OPTION) verifier.login(username, password);
+                if (manager.checkUserExists(username)) {
+                    // This seems to skirt the line between functionality and a potential security weakness
+                    JOptionPane.showMessageDialog(this, "User already exists.");
+                } else {
+                    // Insert hashed(encrypted) password into the account and password databases
+                    manager.createAccount(username, password);
+                    // Confirm and ask if the user wants to autologin
+                    int dialogResult = JOptionPane.showConfirmDialog(this, "Account created successfully. Do you want to log in?", "Login Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (dialogResult == JOptionPane.YES_OPTION) verifier.login(username, password);
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
             }
