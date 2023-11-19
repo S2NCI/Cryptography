@@ -57,13 +57,13 @@ public class PasswordHolder implements Serializable {
         // Decrypt the user data based on a known key(true password)
         try {
             // debug print encrypted values for comparison
-            System.out.println("Username: " + savedUsername + ", Password: " + savedPassword + ", Location: " + savedLocation);
+            System.out.println("Location: " + savedLocation + ", Username: " + savedUsername + ", Password: " + savedPassword);
             
             String exportUsername = decrypt(savedUsername, key);
             String exportPassword = decrypt(savedPassword, key);
             String exportLocation = decrypt(savedLocation, key);
             // return a user readable string of info for printout
-            return "Username: " + exportUsername + ", Password: " + exportPassword + ", Location: " + exportLocation;
+            return "Location: " + exportLocation + ", Username: " + exportUsername + ", Password: " + exportPassword;
         } catch (Exception ex) {
             System.out.println(ex);
             return "FAILED TO DECRYPT";

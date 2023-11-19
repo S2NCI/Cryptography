@@ -195,7 +195,9 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
             if (username != null && password != null && !username.trim().isEmpty() && !password.trim().isEmpty()) {
                 // Insert hashed(encrypted) password into the account and password databases
                 manager.createAccount(username, password);
-                JOptionPane.showMessageDialog(this, "Account created successfully.");
+                // Confirm and ask if the user wants to autologin
+                int dialogResult = JOptionPane.showConfirmDialog(this, "Account created successfully. Do you want to log in?", "Login Confirmation", JOptionPane.YES_NO_OPTION);
+                if (dialogResult == JOptionPane.YES_OPTION) verifier.login(username, password);
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid input. Please try again.");
             }
