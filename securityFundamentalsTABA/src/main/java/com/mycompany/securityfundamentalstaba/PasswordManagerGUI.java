@@ -17,7 +17,7 @@ import javax.swing.JTextField;
  * @author x21226695 - Kyle White 
  */
 
-public class PasswordManagerGUItest extends javax.swing.JFrame {
+public class PasswordManagerGUI extends javax.swing.JFrame {
     // Declare variables
     public PasswordManager manager;
     public PasswordVerifier verifier;
@@ -26,7 +26,7 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
     private Map<String, Map<String, String>> userPasswords = new HashMap<>();
     
     // Initialise supporting classes
-    public PasswordManagerGUItest() {
+    public PasswordManagerGUI() {
         verifier = new PasswordVerifier();
         manager = new PasswordManager(verifier);
         verifier.setManager(manager);
@@ -309,20 +309,21 @@ public class PasswordManagerGUItest extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PasswordManagerGUItest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PasswordManagerGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PasswordManagerGUItest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PasswordManagerGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PasswordManagerGUItest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PasswordManagerGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PasswordManagerGUItest.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PasswordManagerGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PasswordManagerGUItest().setVisible(true);
+                new PasswordManagerGUI().setVisible(true);
             }
         });
     }
