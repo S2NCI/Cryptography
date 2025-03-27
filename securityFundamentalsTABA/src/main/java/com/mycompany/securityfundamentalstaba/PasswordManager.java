@@ -12,13 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-/*
- * @author x22179551 - Adam Cowan 
- * @author x21229317 - Dillon O’ Connor 
- * @author x22110275 - Eoin Wyse 
- * @author x21237336 - Gavin Kelly 
- * @author x21226695 - Kyle White 
- */
 
 public class PasswordManager {
     // Declare variables
