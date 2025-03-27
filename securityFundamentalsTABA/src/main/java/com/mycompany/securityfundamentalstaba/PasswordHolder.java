@@ -6,13 +6,6 @@ import java.security.Key;
 import java.util.Base64;
 import javax.crypto.Cipher;
 
-/*
- * @author x22179551 - Adam Cowan 
- * @author x21229317 - Dillon O’ Connor 
- * @author x22110275 - Eoin Wyse 
- * @author x21237336 - Gavin Kelly 
- * @author x21226695 - Kyle White 
- */
 
 public class PasswordHolder implements Serializable {
     private String savedUsername;
