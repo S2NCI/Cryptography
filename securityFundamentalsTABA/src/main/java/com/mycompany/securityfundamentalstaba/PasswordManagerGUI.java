@@ -9,14 +9,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/*
- * @author x22179551 - Adam Cowan 
- * @author x21229317 - Dillon O’ Connor 
- * @author x22110275 - Eoin Wyse 
- * @author x21237336 - Gavin Kelly 
- * @author x21226695 - Kyle White 
- */
-
 public class PasswordManagerGUI extends javax.swing.JFrame {
     // Declare variables
     public PasswordManager manager;
